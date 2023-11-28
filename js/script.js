@@ -1,84 +1,56 @@
-const quoteContainer = document.getElementById('quote-container');
-const quoteText = document.getElementById('quote');
-const authorText = document.getElementById('author');
-const twitterBtn = document.getElementById('twitter');
-const newQuoteBtn = document.getElementById('new-quote');
+const imageContainer = document.getElementById('image-container');
 const loader = document.getElementById('loader');
 
-let apiQuotes= [];
-// show new quote
+// accesskey need to be always updated, from unsplash. by creating new aplication.
+const accessKey = '1nD8lMyAb_hVdMc2v7nEaEuYmQAqLmThlpT_UH-dA5Q';
+const count = 10;
+const apiUrl = `https://api.unsplash.com/photos/random/?client_id=${accessKey}&count=${count}`;
 
-// show loading
-function loading()
-{
-    loader.hidden= false;
-    quoteContainer.hidden= true;
-}
-// hide loading
-function complete(){
-    quoteContainer.hidden = false;
-    loader.hidden = true;
-}
+let arayPhotosFromUnsplash = [];
 
-function newQuote() {
-    loading();
-// Pick a random quote from apiQuotes array
-const quote = apiQuotes[Math.floor(Math.random()*apiQuotes.length)];
-// check if author field is blanck and replace it with ' 
-if (!quote.author){
-    authorText.textContent='Unknown'
-}else {
-    authorText.textContent= quote.author;
+function showloader(){
+    loader.hidden=false;
+    imageContainer.hidden=true;
 }
-// check Quote length to determine styling
-if (quote.text.length>120){
-    quoteText.classList.add('long-quote');
-}else{
-    quoteText.classList.remove('long-quote');
-}
-    // set quote, hide loader 
-    quoteText.textContent= quote.text;
-complete();
+function hideLoader(){
+    imageContainer.hidden=false;
+    loader.hidden=true;
 }
 
-// get quotes from API
-async function getQuotes(){
-    loading();
-    const apiUrl="https://jacintodesign.github.io/quotes-api/data/quotes.json";
-    try{
-        const response=await fetch(apiUrl);
-        apiQuotes = await response.json();
-        newQuote();
-    }catch(error){
-        // Catch Error Here
+
+
+
+function displayPhotos(){
+    showloader()
+arayPhotosFromUnsplash.forEach((photo) => {
+    
+    const aLink = document.createElement('a');
+    
+    aLink.setAttribute('href', photo.links.html);
+    aLink.setAttribute('target', '_blank');
+    const img = document.createElement('img');
+    
+    img.setAttribute('src',photo.urls.regular);
+    img.setAttribute('alt',photo.alt_description);
+    img.setAttribute('title',photo.alt_description);
+//  put img inside <a>, then both inside imagecontainer
+    aLink.appendChild(img);
+    imageContainer.appendChild(aLink);
+});
+hideLoader()
+}
+
+// get images from unsplash api
+async function getPhotosFromApi(){
+    showloader()
+    try {
+        const response = await fetch(apiUrl);
+        arayPhotosFromUnsplash =await response.json();
+        console.log(arayPhotosFromUnsplash);
+        displayPhotos();
+    } catch (error) {
+        
     }
+    
 }
-
-
-// // ///get quotes from local file
-
-// function newQuote() {
-// const quote = localQuotes[Math.floor(Math.random()*localQuotes.length)];
-// console.log(quote);
-// authorText.textContent= quote.author;
-// quoteText.textContent= quote.text;
-// }
-// newQuote();
-// \
-// 
-
-
-// tweet Quote
-
-function tweetQuote(){
-    const twitterUrl = `https://twitter.com/intent/tweet?text=${quoteText.textContent} - ${authorText.textContent}`;
-    window.open(twitterUrl, '_blank')
-}
-
-// Event listeners
-newQuoteBtn.addEventListener('click', newQuote);
-twitterBtn.addEventListener('click', tweetQuote);
-
-// On Load
-getQuotes();
-
+getPhotosFromApi();
