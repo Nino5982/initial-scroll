@@ -2,12 +2,12 @@ const imageContainer = document.getElementById('image-container');
 const loader = document.getElementById('loader');
 
 // accesskey need to be always updated, from unsplash. by creating new aplication.
-const accessKey = '1nD8lMyAb_hVdMc2v7nEaEuYmQAqLmThlpT_UH-dA5Q';
+const accessKey = 'G5BWT1-NoF1k-JzmpkIpaMpnfi1Y2HYgMaqFrPtVE3s';
 const count = 10;
 const apiUrl = `https://api.unsplash.com/photos/random/?client_id=${accessKey}&count=${count}`;
 
 let arayPhotosFromUnsplash = [];
-
+// loader
 function showloader(){
     loader.hidden=false;
     imageContainer.hidden=true;
@@ -16,23 +16,31 @@ function hideLoader(){
     imageContainer.hidden=false;
     loader.hidden=true;
 }
+// helper function to set attributes on DOM element
+function setAttributes(element, attributes){
+    for (const key in attributes){
+        element.setAttribute(key, attributes[key]);
+    }
+}
 
 
-
-
+// display photos
 function displayPhotos(){
     showloader()
-arayPhotosFromUnsplash.forEach((photo) => {
+    arayPhotosFromUnsplash.forEach((photo) => {
     
     const aLink = document.createElement('a');
-    
-    aLink.setAttribute('href', photo.links.html);
-    aLink.setAttribute('target', '_blank');
+    setAttributes(aLink,{
+        href: photo.links.html,
+        target: '_blank',
+    })
     const img = document.createElement('img');
+setAttributes(img,{
+    src: photo.urls.regular,
+    alt: photo.alt_description,
+    title: photo.alt_description,
+})
     
-    img.setAttribute('src',photo.urls.regular);
-    img.setAttribute('alt',photo.alt_description);
-    img.setAttribute('title',photo.alt_description);
 //  put img inside <a>, then both inside imagecontainer
     aLink.appendChild(img);
     imageContainer.appendChild(aLink);
